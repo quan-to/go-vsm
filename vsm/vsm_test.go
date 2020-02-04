@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode"
 
 	"golang.org/x/text/runes"
 	"golang.org/x/text/transform"
@@ -135,22 +136,41 @@ func TestClassificationSearch(t *testing.T) {
 			Class:    "d2",
 		},
 		Document{
-			Sentence: "Shipment of gold arrived in a truck.",
+			Sentence: "Shipment-of-gold-arrived in a truck.",
 			Class:    "d3",
 		},
 	}
 
 	testCases := []struct {
-		query string
-		want  *Document
+		transformer transform.Transformer
+		query       string
+		want        *Document
 	}{
-		{"gold silver truck.", &Document{"Delivery of silver arrived in a silver truck.", "d2"}},
-		{"shipment gold fire.", &Document{"Shipment of gold damaged in a fire.", "d1"}},
+		{
+			transformer: nil,
+			query:       "gold silver truck.",
+			want:        &Document{"Delivery of silver arrived in a silver truck.", "d2"},
+		},
+		{
+			transformer: nil,
+			query:       "shipment gold fire.",
+			want:        &Document{"Shipment of gold damaged in a fire.", "d1"},
+		},
+		{
+			transformer: runes.Map(func(r rune) rune {
+				if unicode.Is(unicode.Hyphen, r) {
+					return ' '
+				}
+				return r
+			}),
+			query: "shipment gold truck.",
+			want:  &Document{"Shipment-of-gold-arrived in a truck.", "d3"},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.query, func(t *testing.T) {
-			vsm := New(nil)
+			vsm := New(tc.transformer)
 
 			setupTraining(t, vsm, docs)
 
