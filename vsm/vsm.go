@@ -15,144 +15,109 @@ type Document struct {
 	Class    string `json:"class"`
 }
 
-type Term struct {
+type term struct {
 	// DocsSeen holds the number of times
 	// the term has been seen in document.
 	// But it is only counted once even
 	// if it's in a document multiple times.
-	DocsSeen uint64
+	docsSeen uint64
 }
 
 type terms struct {
-	sync.RWMutex
-	terms map[string]Term
+	mu    sync.RWMutex
+	terms map[string]term
 }
 
-func (t *terms) Get(term string) (Term, bool) {
-	t.RLock()
+func (t *terms) Get(term string) (term, bool) {
+	t.mu.RLock()
 	res, ok := t.terms[term]
-	t.RUnlock()
+	t.mu.RUnlock()
 	return res, ok
 }
 
-func (t *terms) Set(k string, v Term) {
-	t.Lock()
+func (t *terms) Set(k string, v term) {
+	t.mu.Lock()
 	t.terms[k] = v
-	t.Unlock()
+	t.mu.Unlock()
 }
 
 type document struct {
 	Document
 
-	TermFreq map[string]uint64
+	termFreq map[string]uint64
 }
 
 type VSM struct {
 	terms *terms
 
-	sync.RWMutex
+	mu   sync.RWMutex
 	docs []document
 
-	DocsCount uint64
+	docsCount uint64
 
-	Transformer transform.Transformer
+	transformer transform.Transformer
 }
 
 func New(t transform.Transformer) *VSM {
 	vsm := &VSM{
-		terms:       &terms{sync.RWMutex{}, make(map[string]Term)},
-		RWMutex:     sync.RWMutex{},
+		terms:       &terms{sync.RWMutex{}, make(map[string]term)},
+		mu:          sync.RWMutex{},
 		docs:        []document{},
-		Transformer: t,
+		transformer: t,
 	}
 
 	return vsm
 }
 
-type Trained struct {
+type TrainResult struct {
 	Doc Document
+	Err error
 }
 
-func (v *VSM) Train(ctx context.Context, docCh <-chan Document) (<-chan Trained, <-chan error) {
-	errCh := make(chan error)
-	trainedCh := make(chan Trained)
+func (v *VSM) Train(ctx context.Context, docCh <-chan Document) <-chan TrainResult {
+	trainCh := make(chan TrainResult)
 
 	go func() {
-		defer close(errCh)
-		defer close(trainedCh)
+		defer close(trainCh)
 
-		for dc := range docCh {
-			v.train(dc)
-
+		for {
 			select {
-			case trainedCh <- Trained{dc}:
+			case doc := <-docCh:
+				trainCh <- TrainResult{Doc: doc, Err: v.train(doc)}
 			case <-ctx.Done():
-				errCh <- ctx.Err()
+				trainCh <- TrainResult{Err: ctx.Err()}
 				return
 			}
 		}
 	}()
-	return trainedCh, errCh
+
+	return trainCh
 }
 
-func (v *VSM) train(dc Document) {
-	doc := document{Document: dc, TermFreq: make(map[string]uint64)}
+func (v *VSM) Search(query string) (*Document, error) {
+	queryDoc := document{termFreq: make(map[string]uint64)}
 
-	seenTerms := make(map[string]struct{})
-
-	sentence := dc.Sentence
-	if v.Transformer != nil {
-		sentence, _, _ = transform.String(v.Transformer, sentence)
-	}
-
-	for _, term := range strings.Split(sentence, " ") {
-		t := strings.ToLower(strings.TrimSpace(term))
-
-		if _, ok := v.terms.Get(t); !ok {
-			v.terms.Set(t, Term{})
-		}
-
-		doc.TermFreq[t]++
-
-		seenTerms[t] = struct{}{}
-	}
-
-	for term := range seenTerms {
-		t, _ := v.terms.Get(term)
-		t.DocsSeen++
-		v.terms.Set(term, t)
-	}
-
-	v.Lock()
-	v.docs = append(v.docs, doc)
-	v.Unlock()
-
-	atomic.StoreUint64(&v.DocsCount, uint64(len(v.docs)))
-}
-
-func (v *VSM) Search(query string) *Document {
-	queryDoc := document{TermFreq: make(map[string]uint64)}
-
-	if v.Transformer != nil {
-		query, _, _ = transform.String(v.Transformer, query)
+	query, err := v.sanitize(query)
+	if err != nil {
+		return nil, err
 	}
 
 	for _, term := range strings.Split(query, " ") {
 		t := strings.ToLower(strings.TrimSpace(term))
 
-		queryDoc.TermFreq[t]++
+		queryDoc.termFreq[t]++
 	}
 
-	totalDocs := atomic.LoadUint64(&v.DocsCount)
+	totalDocs := atomic.LoadUint64(&v.docsCount)
 
 	var querySum float64
-	for term, freq := range queryDoc.TermFreq {
-		t, ok := v.terms.Get(term)
+	for trm, freq := range queryDoc.termFreq {
+		t, ok := v.terms.Get(trm)
 		if !ok {
 			continue
 		}
 
-		idf := math.Log(float64(totalDocs) / float64(t.DocsSeen))
+		idf := math.Log(float64(totalDocs) / float64(t.docsSeen))
 
 		weight := float64(freq) * idf
 
@@ -164,19 +129,19 @@ func (v *VSM) Search(query string) *Document {
 	var foundDoc *Document
 
 	var maxSim float64
-	v.RLock()
+	v.mu.RLock()
 	for _, doc := range v.docs {
 		var docSum float64
 		var coeff float64
 
-		for term, freq := range doc.TermFreq {
-			t, _ := v.terms.Get(term)
+		for trm, freq := range doc.termFreq {
+			t, _ := v.terms.Get(trm)
 
-			idf := math.Log(float64(totalDocs) / float64(t.DocsSeen))
+			idf := math.Log(float64(totalDocs) / float64(t.docsSeen))
 
 			weight := float64(freq) * idf
 
-			queryTermWeight := float64(queryDoc.TermFreq[term]) * idf
+			queryTermWeight := float64(queryDoc.termFreq[trm]) * idf
 
 			coeff += weight * queryTermWeight
 
@@ -191,7 +156,57 @@ func (v *VSM) Search(query string) *Document {
 			maxSim = sim
 		}
 	}
-	v.RUnlock()
+	v.mu.RUnlock()
 
-	return foundDoc
+	return foundDoc, nil
+}
+
+func (v *VSM) train(dc Document) error {
+	doc := document{Document: dc, termFreq: make(map[string]uint64)}
+
+	seenTerms := make(map[string]struct{})
+
+	sentence, err := v.sanitize(dc.Sentence)
+	if err != nil {
+		return err
+	}
+
+	for _, trm := range strings.Split(sentence, " ") {
+		t := strings.ToLower(strings.TrimSpace(trm))
+
+		if _, ok := v.terms.Get(t); !ok {
+			v.terms.Set(t, term{})
+		}
+
+		doc.termFreq[t]++
+
+		seenTerms[t] = struct{}{}
+	}
+
+	for trm := range seenTerms {
+		t, _ := v.terms.Get(trm)
+		t.docsSeen++
+		v.terms.Set(trm, t)
+	}
+
+	v.mu.Lock()
+	v.docs = append(v.docs, doc)
+	v.mu.Unlock()
+
+	atomic.StoreUint64(&v.docsCount, uint64(len(v.docs)))
+
+	return nil
+}
+
+func (v *VSM) sanitize(sentence string) (string, error) {
+	if v.transformer != nil {
+		sanitized, _, err := transform.String(v.transformer, sentence)
+		if err != nil {
+			return sentence, err
+		}
+
+		return sanitized, nil
+	}
+
+	return sentence, nil
 }

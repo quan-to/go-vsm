@@ -3,6 +3,7 @@ package vsm
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -47,19 +48,20 @@ func openTestFile(name string) (*os.File, error) {
 
 func setupTraining(t *testing.T, vsm *VSM, docs []Document) {
 	trainingCh := make(chan Document, len(docs))
-	defer close(trainingCh)
 
 	for _, doc := range docs {
 		trainingCh <- doc
 	}
+	close(trainingCh)
 
-	trainedCh, errCh := vsm.Train(context.Background(), trainingCh)
+	trainedCh := vsm.Train(context.Background(), trainingCh)
 
 	for i := 0; i < len(docs); i++ {
 		select {
-		case err := <-errCh:
-			t.Fatalf("Got error while training: %q.", err)
-		case <-trainedCh:
+		case res := <-trainedCh:
+			if res.Err != nil {
+				t.Fatalf("Got error while training: %q.", res.Err)
+			}
 		case <-time.Tick(500 * time.Millisecond):
 			t.Fatal("Got training timed out.")
 		}
@@ -112,7 +114,11 @@ func TestVSMSearchFromFile(t *testing.T) {
 
 			setupTraining(t, vsm, training.Docs)
 
-			doc := vsm.Search(tc.Query)
+			doc, err := vsm.Search(tc.Query)
+			if err != nil {
+				t.Fatalf("Got error while searching for %q: %q.", tc.Query, err)
+			}
+
 			if doc == nil {
 				t.Fatalf("Got no document found for query: %q.", tc.Query)
 			}
@@ -125,7 +131,6 @@ func TestVSMSearchFromFile(t *testing.T) {
 }
 
 func TestClassificationSearch(t *testing.T) {
-
 	docs := []Document{
 		Document{
 			Sentence: "Shipment of gold damaged in a fire.",
@@ -163,8 +168,13 @@ func TestClassificationSearch(t *testing.T) {
 				}
 				return r
 			}),
-			query: "shipment gold truck.",
+			query: "shipment gold in a flying truck.",
 			want:  &Document{"Shipment-of-gold-arrived in a truck.", "d3"},
+		},
+		{
+			transformer: nil,
+			query:       "this query should result an empty document.",
+			want:        nil,
 		},
 	}
 
@@ -174,7 +184,10 @@ func TestClassificationSearch(t *testing.T) {
 
 			setupTraining(t, vsm, docs)
 
-			got := vsm.Search(tc.query)
+			got, err := vsm.Search(tc.query)
+			if err != nil {
+				t.Fatalf("Got error while searching for %q: %q.", tc.query, err)
+			}
 
 			if !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("Got %+v classifier; want %+v.", got, tc.want)
@@ -183,24 +196,67 @@ func TestClassificationSearch(t *testing.T) {
 	}
 }
 
-func TestClassificationTrainError(t *testing.T) {
-	ctx, _ := context.WithDeadline(context.Background(), time.Now())
+type testingTransformer struct {
+	nDst, nSrc int
+	err        error
+}
 
-	vsm := New(nil)
+func (t *testingTransformer) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err error) {
+	return t.nDst, t.nSrc, t.err
+}
 
-	trainingCh := make(chan Document, 1)
-	defer close(trainingCh)
+func (t *testingTransformer) Reset() {
+}
 
-	trainingCh <- Document{}
+func TestClassificationSearchError(t *testing.T) {
 
-	_, errCh := vsm.Train(ctx, trainingCh)
+	vsm := New(&testingTransformer{err: errors.New("Testing Error")})
 
-	select {
-	case err := <-errCh:
-		if err == nil {
-			t.Error("Got error nil, want not nil.")
-		}
-	case <-time.Tick(500 * time.Millisecond):
-		t.Fatal("error channel timed out")
+	if _, err := vsm.Search("testing"); err == nil {
+		t.Error("Got error nil while searching, want not nil.")
 	}
+}
+
+func TestClassificationTrainError(t *testing.T) {
+	t.Run("context.WithDeadline", func(t *testing.T) {
+		outdated := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
+		ctx, _ := context.WithDeadline(context.Background(), outdated)
+
+		vsm := New(nil)
+
+		trainingCh := make(chan Document)
+		defer close(trainingCh)
+
+		resCh := vsm.Train(ctx, trainingCh)
+
+		select {
+		case res := <-resCh:
+			if res.Err == nil {
+				t.Error("Got error nil, want not nil.")
+			}
+		case <-time.Tick(500 * time.Millisecond):
+			t.Fatal("error channel timed out")
+		}
+	})
+
+	t.Run("Transform", func(t *testing.T) {
+		vsm := New(&testingTransformer{err: errors.New("Testing Error")})
+
+		trainingCh := make(chan Document, 1)
+		defer close(trainingCh)
+
+		trainingCh <- Document{}
+
+		resCh := vsm.Train(context.Background(), trainingCh)
+
+		select {
+		case res := <-resCh:
+			if res.Err == nil {
+				t.Error("Got error nil, want not nil.")
+			}
+		case <-time.Tick(500 * time.Millisecond):
+			t.Fatal("error channel timed out")
+		}
+
+	})
 }
