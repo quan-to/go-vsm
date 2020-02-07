@@ -1,246 +1,18 @@
 {
 	"documents": [
 		{
-			"sentence": "INT TRANSF",
-			"class":    "Transfer"
+			"sentence": "Shipment/of gold damaged*in a-fire.",
+			"class":    "d1"
 		},
 		{
-			"sentence": "TBI",
-			"class":    "Transfer"
+			"sentence": "Delivery/of*silver arrived*in a-silver truck.",
+			"class":    "d2"
 		},
 		{
-			"sentence": "TEC",
-			"class":    "Transfer"
-		},
-		{
-			"Sentence": "TEF TED TED D TED C TED E DOC C, DOC D, TRANSF",
-			"Class":    "Transfer"
-		},
-		{
-			"sentence": "RSHOP",
-			"class":    "DebitCard"
-		},
-		{
-			"sentence": "POUP, RESGATE, REMUNER, REMUNER BASICA ANIV, P, G, APL APLIC AUT MAIS, APL RES AUT MAIS, REND PAGO APLIC AUT MAIS, APLICACAO, RESGATECDB",
-			"class":    "Investment"
-		},
-		{
-			"sentence": "TIT",
-			"Class":    "Payment"
-		},
-                { 
-                        "sentence": "INT TIT PAG",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "CONTRB",
-                        "class": "Payment"
-                },
-                { 
-                        "sentence": "DA",
-                        "class": "Payment"
-                },
-                { 
-                        "sentence": "INT DARF",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": ", INT GPS",
-                        "class": "Payment"
-                }, 
-                {
-                        "sentence": "INT FGTS-GRFF",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT FGTS-GRF",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT-FGTS",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "IOF",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT IPVA-SP",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PAGTO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PGTO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PAG",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PG",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SISDEB",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SISPAG",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SISPAG FORNECEDORES",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SISPAG SALARIOS",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SALARIO",
-                        "class": "Payment"
-                },
-
-                {
-                        "sentence": "INT ITAUCARD",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT ITAUCARD",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT ELETROPAULO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT ELET.PAULO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT LIGHT",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT COPEL",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT COPEL",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT CPFL",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT BANDEIRANTE ENERGI",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT COMGAS",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT VIVO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT CLARO",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT NEXTEL",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT NET SERVIC COMUNICAC",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT OI",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT SABESP",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT CEDAE",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT SANEPAR",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT SANASA",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "INT SANEAR",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "CH",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "CHQ",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PAGAMENTO CHEQUE",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "PAGTO CONTAS CHQ",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SEGURO RESIDENCIA",
-                        "class": "Payment"
-                },
-                {
-                        "sentence": "SISPAG SALARIOS",
-                        "class": "Payment"
-                },
-		{
-			"sentence": "CREDITO CARTAO",
-			"class":    "Payment"
-		},
-		{
-			"sentence": "SAQ, SQ, Saque 24H",
-			"class":    "Cash"
-		},
-		{
-			"sentence": "TAR, TARIFA, ADIANT.DEPOSITANTE, ADIANT.DEPOSITANTE, EXTR, EXT, TAR SAQUE TERMINAL, TAR SAQUE PESSOAL, TAR DOC/TED, TAR TRANSF, TAR CUSTAS COBRANÇA, TAR CHEQUE ADMINISTRATIVO, TAR ORDEM PAGAMENTO, TAR TALÃO, TAR SUSTAÇÃO/REVOGAÇÃO, TAR SUSTAÇÃO/REVOGAÇÃO, TAR FOLHA CHEQUE, TAR EXCLUSÃO CCF, TAR ALTERAÇÃO DATA BOA, TAR CONV CHQ, TAR CÓPIA CHEQUE, TAR CADASTRO, MAN, MANUT, MENS, TAR PACOTE, TAR MAXICONTA, TAR CONTA",
-			"class":    "BankingFee"
-		},
-		{
-			"sentence": "CREDIARIO, REFIN, LIS/JUROS, JUROS, PARCELAGIRO",
-			"class":    "Loans"
-		},
-		{
-			"sentence": "CREDITO CONSIGNADO",
-			"class":    "Loans"
-		},
-		{
-			"sentence": "ANTECIPACAO CARTAO LIQ ANTECIP",
-			"class":    "Loans"
-		},
-		{
-			"sentence": "MULTA CREDITO CONSIGNADO",
-			"class":    "Loans"
-		},
-		{
-			"sentence": "BLOQUEIO JUDICIAL",
-			"Class":    "Judicial"
+			"sentence": "Shipment of gold arrived in a truck.",
+			"class":    "d3"
 		}
+
         ],
         "transform": {
                 "map": {
@@ -249,36 +21,12 @@
                 }
         },
 	"tests": [{
-			"query": "SISPAG QUANTO C S FIN L",
-			"wantClass": "Payment"
+			"query": "gold silver truck.",
+			"wantClass": "d2"
 		},
                 {
-			"query": "SISPAG BIVA SERV FIN SA",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "SISPAG GRAND P S PROM E",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "INT SIMPLES NACIONA 0720",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "INT MULTA SP 03023569592",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "INT TELEFONICA S 0562012",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "INT PM SAO PAU 269100199",
-			"wantClass": "Payment"
-		},
-                {
-			"query": "REMUNERACAO/SALARIO",
-			"wantClass": "Payment"
+			"query": "gold damaged*fire.",
+			"wantClass": "d1"
 		}
 	]
 }
