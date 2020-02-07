@@ -11,10 +11,11 @@
 //
 // The term weighting scheme used in this package is the TFIDF:
 //	   w = term.Count * log(|Docs| / |{ d ∈ Docs | term ∈ d}|)
+// Where Docs are the all knownthe documents
 //
 // Vector space model uses the deviation of angles
 // between each document vector and the query vector
-// to calculate their similarities by calculating
+// to check their similarities by calculating
 // the cosine of the angle between the vectors.
 // So for each document vector dᵢ and a query vector q:
 //	  cos0 = dᵢ•q / ||dᵢ|| * ||q||
