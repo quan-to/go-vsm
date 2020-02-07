@@ -116,7 +116,7 @@ func ExampleVSM_DynamicTraining() {
 
 	trainCh := vsm.DynamicTraining(context.Background(), docCh)
 
-	// Waits until all documents where consumed by the training process.
+	// Waits until all documents are consumed by the training process.
 	for {
 		_, ok := <-trainCh
 		if !ok {
