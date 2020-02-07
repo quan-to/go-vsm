@@ -1,7 +1,6 @@
 # go-vsm
 
 [![GoDoc](https://godoc.org/github.com/quan-to/go-vsm?status.svg)](https://godoc.org/github.com/quan-to/go-vsm/vsm)
-[![Coverage Status](https://coveralls.io/repos/github/quan-to/go-vsm/badge.svg?branch=master)](https://coveralls.io/github/quan-to/go-vsm?branch=master)
 
 Vector Space Model implementation in Go.
 
