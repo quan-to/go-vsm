@@ -4,7 +4,7 @@
 
 Vector Space Model implementation in Go.
 
-This package provides document search besed on the algebraic [Vector Space Model](https://en.wikipedia.org/wiki/Vector_space_model). The weighting scheme used is the [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf).
+This package provides document search based on the algebraic [Vector Space Model](https://en.wikipedia.org/wiki/Vector_space_model). The weighting scheme used is the [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf).
 
 ## Usage
 
