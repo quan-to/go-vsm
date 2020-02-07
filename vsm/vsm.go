@@ -11,7 +11,7 @@
 //
 // The term weighting scheme used in this package is the TFIDF:
 //	   w = term.Count * log(|Docs| / |{ d ∈ Docs | term ∈ d}|)
-// Where Docs are the all knownthe documents
+// Where Docs are the the known documents in the corpus.
 //
 // Vector space model uses the deviation of angles
 // between each document vector and the query vector
