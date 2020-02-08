@@ -15,7 +15,7 @@ import "github.com/quan-to/go-vsm/vsm"
 Construct a VSM object and use the methods of the VSM object for training:
 
 ```go
-vsm := New(nil)
+vs := vsm.New(nil)
 
 docs := []Document{
         Document{
@@ -36,7 +36,7 @@ docs := []Document{
 
 // Statically training
 for _, doc := range docs {
-        if err := vsm.StaticTraining(doc); err != nil {
+        if err := vs.StaticTraining(doc); err != nil {
                 // Error occurred during training.
         }
 }
@@ -58,10 +58,10 @@ docs := []Document{
         },
 }
 
-vsm := New(nil)
+vs := vsm.New(nil)
 
 for _, doc := range docs {
-        err := vsm.StaticTraining(doc)
+        err := vs.StaticTraining(doc)
         fmt.Println(err)
 }
 
@@ -83,7 +83,7 @@ go func() {
         }
 }()
 
-trainCh := vsm.DynamicTraining(context.Background(), docCh)
+trainCh := vs.DynamicTraining(context.Background(), docCh)
 
 // Checks if error occurred during the training process.
 for {
@@ -103,10 +103,10 @@ for {
 
 Search applies the Vector Space Model to compare the deviation of angles between each document vector and the query vector.
 
-```
-doc, err := vsm.Search("gold silver truck.")
+```go
+doc, err := vs.Search("gold silver truck.")
 
-fmt.Println(doc.Class, err) // d2
+fmt.Println(doc.Class, err)
 ```
 
 ## Testing
