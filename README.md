@@ -18,15 +18,15 @@ Construct a VSM object and use the methods of the VSM object for training:
 vs := vsm.New(nil)
 
 docs := []vsm.Document{
-        vms.Document{
+        {
                 Sentence: "Shipment of gold damaged in a fire.",
                 Class:    "d1",
         },
-        vsm.Document{
+        {
                 Sentence: "Delivery of silver arrived in a silver truck.",
                 Class:    "d2",
         },
-        vsm.Document{
+        {
                 Sentence: "Shipment of gold arrived in a truck.",
                 Class:    "d3",
         },
@@ -48,11 +48,11 @@ Static training is executed once, and for most cases it's enough:
 
 ```go
 docs := []vsm.Document{
-        vsm.Document{
+        {
                 Sentence: "Shipment of gold damaged in a fire.",
                 Class:    "d1",
         },
-        vsm.Document{
+        {
                 Sentence: "Shipment of gold arrived in a truck.",
                 Class:    "d3",
         },
