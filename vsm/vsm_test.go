@@ -126,15 +126,15 @@ func TestVSMDynamicTrainingError(t *testing.T) {
 
 func TestVSMSearch(t *testing.T) {
 	docs := []Document{
-		Document{
+		{
 			Sentence: "Shipment of gold damaged in a fire.",
 			Class:    "d1",
 		},
-		Document{
+		{
 			Sentence: "Delivery of silver arrived in a silver truck.",
 			Class:    "d2",
 		},
-		Document{
+		{
 			Sentence: "Shipment-of-gold-arrived in a truck.",
 			Class:    "d3",
 		},

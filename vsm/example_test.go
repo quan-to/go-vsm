@@ -10,15 +10,15 @@ import (
 
 func Example() {
 	docs := []Document{
-		Document{
+		{
 			Sentence: "Shipment of gold damaged in a fire.",
 			Class:    "d1",
 		},
-		Document{
+		{
 			Sentence: "Delivery of silver arrived in a silver truck.",
 			Class:    "d2",
 		},
-		Document{
+		{
 			Sentence: "Shipment of gold arrived in a truck.",
 			Class:    "d3",
 		},
@@ -42,15 +42,15 @@ func Example() {
 
 func ExampleVSM_Search() {
 	docs := []Document{
-		Document{
+		{
 			Sentence: "Shipment of gold damaged in a fire.",
 			Class:    "d1",
 		},
-		Document{
+		{
 			Sentence: "Delivery of silver arrived in a silver truck.",
 			Class:    "d2",
 		},
-		Document{
+		{
 			Sentence: "Shipment-of-gold-arrived in a truck.",
 			Class:    "d3",
 		},
@@ -84,11 +84,11 @@ func ExampleVSM_Search() {
 
 func ExampleVSM_DynamicTraining() {
 	docs := []Document{
-		Document{
+		{
 			Sentence: "Shipment of gold damaged in a fire.",
 			Class:    "d1",
 		},
-		Document{
+		{
 			Sentence: "Shipment of gold arrived in a truck.",
 			Class:    "d3",
 		},
