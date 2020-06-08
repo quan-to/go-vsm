@@ -1,6 +1,7 @@
 # go-vsm
 
 [![GoDoc](https://godoc.org/github.com/quan-to/go-vsm?status.svg)](https://godoc.org/github.com/quan-to/go-vsm/vsm)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fquan-to%2Fgo-vsm.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fquan-to%2Fgo-vsm?ref=badge_shield)
 
 Vector Space Model implementation in Go.
 
@@ -136,3 +137,6 @@ The `-filename` flag should point to a file inside the `testdata` folder. See th
 ## LICENSE - MIT
 
 see [LICENSE](LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fquan-to%2Fgo-vsm.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fquan-to%2Fgo-vsm?ref=badge_large)
